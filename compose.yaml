@@ -3,6 +3,8 @@ name: entreprisecom_school
 services:
   db:
     image: mysql:8.4
+    ports:
+      - "127.0.0.1:3307:3306"
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
       MYSQL_DATABASE: sirene
@@ -25,6 +27,19 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__Default: "Server=db;Port=3306;Database=sirene;User ID=root;"
+    depends_on:
+      db:
+        condition: service_healthy
+
+
+  analytics:
+    build: ./analytics-api
+    ports:
+      - "127.0.0.1:5001:5000"
+    environment:
+      DB_HOST: db
+      DB_NAME: sirene
+      DB_USER: root
     depends_on:
       db:
         condition: service_healthy
