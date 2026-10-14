@@ -1,0 +1,14 @@
+@entreprisecom_HostAddress = http://localhost:8080
+
+GET {{entreprisecom_HostAddress}}/api/entreprises/000325175
+Accept: application/json
+
+###
+
+GET {{entreprisecom_HostAddress}}/api/entreprises?codeActivite=68.20B
+Accept: application/json
+
+###
+
+GET {{entreprisecom_HostAddress}}/api/entreprises?denomination=FABRIQUE
+Accept: application/json

@@ -1,0 +1,33 @@
+name: entreprisecom_school
+
+services:
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: sirene
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./StockUniteLegale_100000_utf8.sql:/import/data.sql:ro
+      - ./docker/01-import.sh:/docker-entrypoint-initdb.d/01-import.sh:ro
+      - ./docker/02-ready.sql:/docker-entrypoint-initdb.d/02-ready.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysql -uroot -N -e 'SELECT 1 FROM sirene.import_status LIMIT 1' >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 5s
+      retries: 90
+      start_period: 30s
+
+  api:
+    build: ./entreprisecom
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Default: "Server=db;Port=3306;Database=sirene;User ID=root;"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  mysql_data:
